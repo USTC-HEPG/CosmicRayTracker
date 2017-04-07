@@ -55,6 +55,7 @@ public:
   
   // set methods
   void SetRandomFlag(G4bool value);
+  G4double getLastGeneratedEnergy();
 
 private:
   Config *mConfig;

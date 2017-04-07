@@ -12,11 +12,12 @@
 
 class Config {
 public:
-	Config(G4double pEnergy, bool pRandomize, bool pHistNotPlot);
+	Config(G4double pEnergy, bool pRandomize, bool pMakePlot, bool pMakeHist);
 	virtual ~Config();
 	const G4double energy;
 	const bool randomize;
-	const bool histNotPlot;
+	const bool makePlot;
+	const bool makeHist;
 };
 
 #endif /* SOURCE_DIRECTORY__INCLUDE_CONFIG_HH_ */

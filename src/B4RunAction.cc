@@ -1,33 +1,3 @@
-//
-// ********************************************************************
-// * License and Disclaimer                                           *
-// *                                                                  *
-// * The  Geant4 software  is  copyright of the Copyright Holders  of *
-// * the Geant4 Collaboration.  It is provided  under  the terms  and *
-// * conditions of the Geant4 Software License,  included in the file *
-// * LICENSE and available at  http://cern.ch/geant4/license .  These *
-// * include a list of copyright holders.                             *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.  Please see the license in the file  LICENSE  and URL above *
-// * for the full disclaimer and the limitation of liability.         *
-// *                                                                  *
-// * This  code  implementation is the result of  the  scientific and *
-// * technical work of the GEANT4 collaboration.                      *
-// * By using,  copying,  modifying or  distributing the software (or *
-// * any work based  on the software)  you  agree  to acknowledge its *
-// * use  in  resulting  scientific  publications,  and indicate your *
-// * acceptance of all terms of the Geant4 Software license.          *
-// ********************************************************************
-//
-// $Id: B4RunAction.cc 87359 2014-12-01 16:04:27Z gcosmo $
-//
-/// \file B4RunAction.cc
-/// \brief Implementation of the B4RunAction class
-
 #include "B4RunAction.hh"
 #include "B4Analysis.hh"
 
@@ -37,7 +7,6 @@
 #include "G4SystemOfUnits.hh"
 #include <sstream>
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 B4RunAction::B4RunAction(Config * pConfig)
 : G4UserRunAction(),
@@ -52,7 +21,7 @@ B4RunAction::B4RunAction(Config * pConfig)
 	G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 	G4cout << "Using " << analysisManager->GetType() << G4endl;
 
-	if (!config->histNotPlot){
+	if (config->makePlot){
 		// Create directories
 		//analysisManager->SetHistoDirectoryName("histograms");
 		//analysisManager->SetNtupleDirectoryName("ntuple");
@@ -77,6 +46,10 @@ B4RunAction::B4RunAction(Config * pConfig)
 		analysisManager->CreateNtupleDColumn("Lgap");
 		analysisManager->FinishNtuple();
 	}
+	if (config->makeHist){
+		analysisManager->SetFirstHistoId(0);
+		analysisManager->CreateH2("energy", "Measured vs true energy", 100, 0, config->energy, 100, 0, config->energy,
+						"true energy", "energy", "what is this 1", "what is this 2", "what is this 3", "what is this 4");}
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -98,7 +71,10 @@ void B4RunAction::BeginOfRunAction(const G4Run* /*run*/)
 
 	// Open an output file
 	//
-	if (!config->histNotPlot){
+	if (config->makeHist){
+		analysisManager->OpenFile("energyPlot.root");
+	}
+	if (config->makePlot){
 		std::stringstream ss;
 		ss << config->energy;
 		std::string asString;
@@ -118,7 +94,7 @@ void B4RunAction::EndOfRunAction(const G4Run* /*run*/)
 
 	// print histogram statistics
 	//
-	if (!config->histNotPlot){
+	if (config->makePlot){
 		G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 		if ( analysisManager->GetH1(1) ) {
 			G4cout << G4endl << " ----> print histograms statistic ";
@@ -155,11 +131,17 @@ void B4RunAction::EndOfRunAction(const G4Run* /*run*/)
 					<< " rms = "
 					<< G4BestUnit(analysisManager->GetH1(4)->rms(),  "Length") << G4endl;
 
-		// save histograms & ntuple
-		//
+			// save histograms & ntuple
+			//
+		}
+	}
+	if (config->makeHist){
+		//whee
+	}
+	if (config->makePlot || config->makeHist){
+		G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 		analysisManager->Write();
 		analysisManager->CloseFile();
-		}
 	}
 
 }

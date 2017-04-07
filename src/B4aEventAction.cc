@@ -76,7 +76,7 @@ void B4aEventAction::EndOfEventAction(const G4Event* event)
 	// Accumulate statistics
 	//
 
-	if (!config->histNotPlot){
+	if (config->makePlot){
 		// get analysis manager
 		G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 
@@ -92,8 +92,10 @@ void B4aEventAction::EndOfEventAction(const G4Event* event)
 		analysisManager->FillNtupleDColumn(2, fTrackLAbs);
 		analysisManager->FillNtupleDColumn(3, fTrackLGap);
 		analysisManager->AddNtupleRow();
-	} else {
-		//fill 2d hist
+	}
+	if (config->makeHist){
+		G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+		analysisManager->FillH2(0, primGens->getLastGeneratedEnergy(), fEnergyAbs, 1);
 	}
 	// Print per event (modulo n)
 	//

@@ -74,7 +74,8 @@ int main(int argc,char** argv)
   G4String session;
   G4double energy = 1;
   bool randomize = false;
-  bool histNotPlot = false;
+  bool doPlot = false;
+  bool doHist = false;
 #ifdef G4MULTITHREADED
   G4int nThreads = 0;
 #endif
@@ -84,7 +85,8 @@ int main(int argc,char** argv)
     else if ( arg == "-u" ) session = argv[i+1];
     else if ( arg == "-n") {energy = atof(argv[i+1]);}
     else if ( arg == "-r") {randomize = true; i -= 1;}
-    else if ( arg == "-p") {histNotPlot = true; i -= 1;}
+    else if ( arg == "-p") {doPlot = true; i -= 1;}
+    else if ( arg == "-h") {doHist = true; i -= 1;}
 #ifdef G4MULTITHREADED
     else if ( G4String(argv[i]) == "-t" ) {
       nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
@@ -119,7 +121,7 @@ int main(int argc,char** argv)
   G4RunManager * runManager = new G4RunManager;
 #endif
 
-  Config* config = new Config(energy, randomize, histNotPlot);
+  Config* config = new Config(energy, randomize, doPlot, doHist);
 
   // Set mandatory initialization classes
   //

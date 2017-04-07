@@ -7,10 +7,11 @@
 
 #include <Config.hh>
 
-Config::Config(G4double pEnergy, bool pRandomize, bool pHistNotPlot):
+Config::Config(G4double pEnergy, bool pRandomize, bool pMakePlot, bool pMakeHist):
 	energy(pEnergy),
 	randomize(pRandomize),
-	histNotPlot(pHistNotPlot){
+	makePlot(pMakePlot),
+	makeHist(pMakeHist){
 }
 
 Config::~Config() {
