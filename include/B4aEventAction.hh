@@ -32,6 +32,8 @@
 #define B4aEventAction_h 1
 
 #include "G4UserEventAction.hh"
+#include "B4PrimaryGeneratorAction.hh"
+#include "Config.hh"
 #include "globals.hh"
 
 /// Event action class
@@ -45,7 +47,7 @@
 class B4aEventAction : public G4UserEventAction
 {
   public:
-    B4aEventAction();
+    B4aEventAction(Config *pConfig, B4PrimaryGeneratorAction *pPrimGens);
     virtual ~B4aEventAction();
 
     virtual void  BeginOfEventAction(const G4Event* event);
@@ -69,6 +71,10 @@ class B4aEventAction : public G4UserEventAction
     G4double  fTrackLAbs; 
   // can you guess?
     G4double  fTrackLGap;
+
+
+    Config *config;
+    B4PrimaryGeneratorAction *primGens;
 };
 
 // inline functions

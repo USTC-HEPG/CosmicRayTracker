@@ -57,7 +57,9 @@ public:
   void SetRandomFlag(G4bool value);
 
 private:
+  Config *mConfig;
   G4ParticleGun*  fParticleGun; // G4 particle gun
+  G4double lastGeneratedEnergy;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

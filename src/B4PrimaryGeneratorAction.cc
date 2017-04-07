@@ -46,6 +46,7 @@
 // !!!!!!!!!!  This is the creator for this class
 B4PrimaryGeneratorAction::B4PrimaryGeneratorAction(Config* config)
  : G4VUserPrimaryGeneratorAction(),
+   mConfig(config),
    fParticleGun(0)
 {
   // we want to generate 1 particles per event
@@ -105,6 +106,14 @@ void B4PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // here we are creating our particle at x,y,z = 0,0, -z edge of the box
   fParticleGun
     ->SetParticlePosition(G4ThreeVector(0., 0., -worldZHalfLength));
+
+  if (mConfig->randomize){
+	  lastGeneratedEnergy = mConfig->energy*GeV * G4UniformRand();
+  } else {
+	  lastGeneratedEnergy = mConfig->energy;
+  }
+  fParticleGun->SetParticleEnergy(lastGeneratedEnergy);
+
 
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }

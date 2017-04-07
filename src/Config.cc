@@ -7,8 +7,10 @@
 
 #include <Config.hh>
 
-Config::Config(G4double pEnergy):
-	energy(pEnergy){
+Config::Config(G4double pEnergy, bool pRandomize, bool pHistNotPlot):
+	energy(pEnergy),
+	randomize(pRandomize),
+	histNotPlot(pHistNotPlot){
 }
 
 Config::~Config() {

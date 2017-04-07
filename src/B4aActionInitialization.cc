@@ -60,9 +60,10 @@ void B4aActionInitialization::BuildForMaster() const
 
 void B4aActionInitialization::Build() const
 {
-  SetUserAction(new B4PrimaryGeneratorAction(mConfig));
+  B4PrimaryGeneratorAction *primGen = new B4PrimaryGeneratorAction(mConfig);
+  SetUserAction(primGen);
   SetUserAction(new B4RunAction(mConfig));
-  B4aEventAction* eventAction = new B4aEventAction;
+  B4aEventAction* eventAction = new B4aEventAction(mConfig, primGen);
   SetUserAction(eventAction);
   SetUserAction(new B4aSteppingAction(fDetConstruction,eventAction));
 }  
