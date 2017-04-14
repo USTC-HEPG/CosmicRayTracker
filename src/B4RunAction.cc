@@ -16,7 +16,7 @@ B4RunAction::B4RunAction(Config * pConfig)
 	G4RunManager::GetRunManager()->SetPrintProgress(1);
 
 	// Create analysis manager
-	// The choice of analysis technology is done via selectin of a namespace
+	// The choice of analysis technology is done via selection of a namespace
 	// in B4Analysis.hh
 	G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 	G4cout << "Using " << analysisManager->GetType() << G4endl;
@@ -47,9 +47,11 @@ B4RunAction::B4RunAction(Config * pConfig)
 		analysisManager->FinishNtuple();
 	}
 	if (config->makeHist){
+		G4cout<< "Making 1D histogram" << G4endl;
 		analysisManager->SetFirstHistoId(0);
-		analysisManager->CreateH2("energy", "Measured vs true energy", 100, 0, config->energy, 100, 0, config->energy,
-						"true energy", "energy", "what is this 1", "what is this 2", "what is this 3", "what is this 4");}
+		analysisManager->CreateH2("energy", "Measured vs true energy", 100, 0, config->energy*GeV, 100, 0, config->energy*GeV,
+								"none", "none", "none", "none", "linear", "linear");
+	}
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -90,8 +92,6 @@ void B4RunAction::BeginOfRunAction(const G4Run* /*run*/)
 
 void B4RunAction::EndOfRunAction(const G4Run* /*run*/)
 {
-
-
 	// print histogram statistics
 	//
 	if (config->makePlot){
@@ -106,16 +106,17 @@ void B4RunAction::EndOfRunAction(const G4Run* /*run*/)
 				G4cout << "for the local thread " << G4endl << G4endl;
 			}
 			/*
-    G4cout << " EAbs from tree : mean = "
-	   << G4BestUnit(analysisManager->GetNtuple(0), "Energy")
-	   << " rms = "
-	   << G4BestUnit(analysisManager->GetNtuple(0),  "Energy") << G4endl;
+    		G4cout << " EAbs from tree : mean = "
+	   	   		   << G4BestUnit(analysisManager->GetNtuple(0), "Energy")
+	   	   	   	   << " rms = "
+	   	   	   	   << G4BestUnit(analysisManager->GetNtuple(0),  "Energy") << G4endl;
 			 */
-			G4cout << " EAbs : mean = "
+			G4cout << " Measured EAbs : mean = "
 					<< G4BestUnit(analysisManager->GetH1(1)->mean(), "Energy")
 					<< " rms = "
 					<< G4BestUnit(analysisManager->GetH1(1)->rms(),  "Energy") << G4endl;
 
+			/*
 			G4cout << " EGap : mean = "
 					<< G4BestUnit(analysisManager->GetH1(2)->mean(), "Energy")
 					<< " rms = "
@@ -130,9 +131,8 @@ void B4RunAction::EndOfRunAction(const G4Run* /*run*/)
 					<< G4BestUnit(analysisManager->GetH1(4)->mean(), "Length")
 					<< " rms = "
 					<< G4BestUnit(analysisManager->GetH1(4)->rms(),  "Length") << G4endl;
+			*/
 
-			// save histograms & ntuple
-			//
 		}
 	}
 	if (config->makeHist){
