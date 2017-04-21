@@ -73,7 +73,8 @@ class B4DetectorConstruction : public G4VUserDetectorConstruction
     //
     void DefineMaterials();
     G4VPhysicalVolume* DefineVolumes();
-	G4VPhysicalVolume * makeTriangle(G4LogicalVolume *worldLV, G4ThreeVector pos, G4RotationMatrix *rot);
+	G4VPhysicalVolume * makeTriangle(G4LogicalVolume *worldLV, G4ThreeVector pos, G4RotationMatrix *rot,
+			G4String name);
   
     // data members
     //

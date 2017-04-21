@@ -23,6 +23,7 @@
 #include "G4SystemOfUnits.hh"
 
 #include "G4Polyhedra.hh"
+#include "G4NistManager.hh"
 
 G4ThreadLocal 
 G4GlobalMagFieldMessenger* B4DetectorConstruction::fMagFieldMessenger = 0; 
@@ -94,15 +95,17 @@ void B4DetectorConstruction::DefineMaterials()
 }
 
 
-G4VPhysicalVolume * B4DetectorConstruction::makeTriangle(G4LogicalVolume *worldLV, G4ThreeVector pos, G4RotationMatrix *rot){
-  G4Material* polystyrene = G4Material::GetMaterial("polystyrene");
+G4VPhysicalVolume * B4DetectorConstruction::makeTriangle(G4LogicalVolume *worldLV, G4ThreeVector pos,
+		G4RotationMatrix *rot, G4String name){
+  G4NistManager *nist = G4NistManager::Instance();
+  G4Material* polystyrene = nist->FindOrBuildMaterial("G4_POLYSTYRENE");
   //Time to add a triangular prism
   G4double size = 5 * cm;
   G4double height = 10 * cm;
   const G4double outerRadii[] = {0, size, size, 0};
   const G4double zCoords[] = {0, 0, height, height};
   G4VSolid* triangly
-  	= new G4Polyhedra(G4String("Triangly"),//name
+  	= new G4Polyhedra(name,//name
   			G4double(0), G4double(2 * CLHEP::pi), //draw from angles 0 to 2pi
   			G4int(3), G4int(4), //triangles have 3 sides, and triangular prisms have 4 changes in radius
 			outerRadii, zCoords);//the center of the triangle is 0 from the center, while the corners are size from the center
@@ -127,8 +130,8 @@ G4VPhysicalVolume* B4DetectorConstruction::DefineVolumes()
 {
   // Geometry parameters
 
-  G4double worldSizeXY = 1;
-  G4double worldSizeZ  = 1;
+  G4double worldSizeXY = 50 * cm;
+  G4double worldSizeZ  = 50 * cm;
   
   G4Material* defaultMaterial = G4Material::GetMaterial("Galactic");
 
@@ -153,9 +156,9 @@ G4VPhysicalVolume* B4DetectorConstruction::DefineVolumes()
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
   
-  makeTriangle(worldLV,G4ThreeVector(0,0, -20 * cm),&triangleRotation);
-  makeTriangle(worldLV,G4ThreeVector(0,0,0),&triangleRotation);
-  makeTriangle(worldLV,G4ThreeVector(0,0, 20 * cm),&triangleRotation);
+  makeTriangle(worldLV,G4ThreeVector(0,0, -20 * cm),&triangleRotation, "triangle 1");
+  makeTriangle(worldLV,G4ThreeVector(0,0,0),&triangleRotation, "triangle 2");
+  makeTriangle(worldLV,G4ThreeVector(0,0, 20 * cm),&triangleRotation, "triangle 3");
   
   worldLV->SetVisAttributes (G4VisAttributes::Invisible);
 
