@@ -85,13 +85,13 @@ class B4DetectorConstruction : public G4VUserDetectorConstruction
 
 // inline functions
 
-inline const G4VPhysicalVolume* B4DetectorConstruction::GetAbsorberPV() const { 
-  return fAbsorberPV; 
-}
+//inline const G4VPhysicalVolume* B4DetectorConstruction::GetAbsorberPV() const {
+//  return fAbsorberPV;
+//}
 
-inline const G4VPhysicalVolume* B4DetectorConstruction::GetGapPV() const  { 
-  return fGapPV; 
-}
+//inline const G4VPhysicalVolume* B4DetectorConstruction::GetGapPV() const  {
+//  return fGapPV;
+//}
      
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
