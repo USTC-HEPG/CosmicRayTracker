@@ -71,13 +71,13 @@ void B4aSteppingAction::UserSteppingAction(const G4Step* step)
     stepLength = step->GetStepLength();
   }
       
-  if ( volume == fDetConstruction->GetAbsorberPV() ) {
-    fEventAction->AddAbs(edep,stepLength);
-  }
+//  if ( volume == fDetConstruction->GetAbsorberPV() ) {
+//    fEventAction->AddAbs(edep,stepLength);
+//  }
   
-  if ( volume == fDetConstruction->GetGapPV() ) {
-    fEventAction->AddGap(edep,stepLength);
-  }
+//  if ( volume == fDetConstruction->GetGapPV() ) {
+//    fEventAction->AddGap(edep,stepLength);
+//  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

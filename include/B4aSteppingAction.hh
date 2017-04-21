@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 // $Id: B4aSteppingAction.hh 68058 2013-03-13 14:47:43Z gcosmo $
-// 
+//
 /// \file B4aSteppingAction.hh
 /// \brief Definition of the B4aSteppingAction class
 
@@ -55,7 +55,5 @@ private:
   const B4DetectorConstruction* fDetConstruction;
   B4aEventAction*  fEventAction;  
 };
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif

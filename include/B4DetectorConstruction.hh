@@ -33,6 +33,8 @@
 
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
+#include "G4ThreeVector.hh"
+#include "G4RotationMatrix.hh"
 
 class G4VPhysicalVolume;
 class G4GlobalMagFieldMessenger;
@@ -71,9 +73,11 @@ class B4DetectorConstruction : public G4VUserDetectorConstruction
     //
     void DefineMaterials();
     G4VPhysicalVolume* DefineVolumes();
+	G4VPhysicalVolume * makeTriangle(G4LogicalVolume *worldLV, G4ThreeVector pos, G4RotationMatrix *rot);
   
     // data members
     //
+	G4RotationMatrix triangleRotation;
     static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger; 
                                       // magnetic field messenger
      
