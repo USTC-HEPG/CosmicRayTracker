@@ -50,8 +50,16 @@ G4VPhysicalVolume* B4DetectorConstruction::Construct()
 
 void B4DetectorConstruction::DefineMaterials()
 { 
-  // Lead material defined using NIST Manager
+
   G4NistManager* nistManager = G4NistManager::Instance();
+/*
+  //scintillator material
+  G4Material* fPolystyrene= nistManager->FindOrBuildMaterial("G4_POLYSTYRENE");
+  //air
+  G4Material* fAir = nistManager->FindOrBuildMaterial("G4_AIR");
+*/
+
+  // Lead material defined using NIST Manager
   nistManager->FindOrBuildMaterial("G4_Pb");
   
   // Liquid argon material
@@ -76,6 +84,7 @@ void B4DetectorConstruction::DefineMaterials()
   // Vacuum
   new G4Material("Galactic", z=1., a=1.01*g/mole,density= universe_mean_density,
                   kStateGas, 2.73*kelvin, 3.e-18*pascal);
+
 
   // Print materials
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
