@@ -24,6 +24,7 @@
 
 #include "G4Polyhedra.hh"
 #include "G4NistManager.hh"
+#include "G4Trap.hh"
 
 G4ThreadLocal 
 G4GlobalMagFieldMessenger* B4DetectorConstruction::fMagFieldMessenger = 0; 
@@ -95,13 +96,16 @@ void B4DetectorConstruction::DefineMaterials()
 }
 
 
-G4VPhysicalVolume * B4DetectorConstruction::makeTriangle(G4LogicalVolume *worldLV, G4ThreeVector pos,
+G4VPhysicalVolume * makeTrianglePoly(G4LogicalVolume *worldLV, G4ThreeVector pos,
 		G4RotationMatrix *rot, G4String name){
   G4NistManager *nist = G4NistManager::Instance();
   G4Material* polystyrene = nist->FindOrBuildMaterial("G4_POLYSTYRENE");
+//  G4Material* polystyrene = nist->FindOrBuildMaterial("G4_Pb");
   //Time to add a triangular prism
-  G4double size = 5 * cm;
-  G4double height = 10 * cm;
+//  G4double size = 5 * cm;
+//  G4double height = 10 * cm;
+  G4double size = m;
+  G4double height = m;
   const G4double outerRadii[] = {0, size, size, 0};
   const G4double zCoords[] = {0, 0, height, height};
   G4VSolid* triangly
@@ -118,12 +122,47 @@ G4VPhysicalVolume * B4DetectorConstruction::makeTriangle(G4LogicalVolume *worldL
 	worldLV, //place it in the world
 	false, // no boolean operation (whatever that means)
 	0, //copy number apparently
-	fCheckOverlaps);//better check for those overlaps
+	true);//better check for those overlaps
 
   //tell the compile I don't care this variable wasn't used.
   //Note that really all these things should be deleted at some point.
   return  trianglyPV;
+}
 
+G4VPhysicalVolume* B4DetectorConstruction::makeTriangle(G4LogicalVolume *worldLV, G4ThreeVector pos,
+		G4RotationMatrix *rot, G4String name){
+	G4NistManager *nist = G4NistManager::Instance();
+	G4Material* polystyrene = nist->FindOrBuildMaterial("G4_Pb");
+//    G4Material* polystyrene = nist->FindOrBuildMaterial("G4_POLYSTYRENE");
+	G4double l1 = 10*cm, l2 = 10*cm;
+	G4double lz = 20*cm;
+	G4double angle = 2*pi / 6;
+//	G4VSolid* triangly
+//		= new G4Trap("traingle",
+//				/*pDz*/lz, /*pTheta*/0,
+//				/*pPhi*/0, /*pDy1*/l2,
+//				/*pDx1*/0, /*pDx2*/l1,
+//				/*pAlp1*/angle, /*pDy2*/l2,
+//				/*pDx3*/0, /*pDx4*/l1,
+//				/*pAlp2*/angle);
+	G4VSolid *triangly
+		= new G4Trap(name,
+				lz, l2, l1, 1);
+
+    G4LogicalVolume* trianglyLV = new G4LogicalVolume(triangly, polystyrene, "Triangly");
+    G4PVPlacement* trianglyPV = new G4PVPlacement(
+  	rot, //yes rotation
+  	pos,
+  	trianglyLV,
+  	"Triangly",
+  	worldLV, //place it in the world
+  	false, // no boolean operation (whatever that means)
+  	0, //copy number apparently
+  	true);//better check for those overlaps
+
+    //tell the compile I don't care this variable wasn't used.
+    //Note that really all these things should be deleted at some point.
+    return  trianglyPV;
 }
 
 G4VPhysicalVolume* B4DetectorConstruction::DefineVolumes()
@@ -132,6 +171,8 @@ G4VPhysicalVolume* B4DetectorConstruction::DefineVolumes()
 
   G4double worldSizeXY = 50 * cm;
   G4double worldSizeZ  = 50 * cm;
+//  G4double worldSizeXY = 10 * m;
+//  G4double worldSizeZ  = 10 * m;
   
   G4Material* defaultMaterial = G4Material::GetMaterial("Galactic");
 
@@ -159,7 +200,25 @@ G4VPhysicalVolume* B4DetectorConstruction::DefineVolumes()
   makeTriangle(worldLV,G4ThreeVector(0,0, -20 * cm),&triangleRotation, "triangle 1");
   makeTriangle(worldLV,G4ThreeVector(0,0,0),&triangleRotation, "triangle 2");
   makeTriangle(worldLV,G4ThreeVector(0,0, 20 * cm),&triangleRotation, "triangle 3");
-  
+//  G4NistManager *nist = G4NistManager::Instance();
+//  G4Material* lead = nist->FindOrBuildMaterial("G4_Pb");
+//
+//  G4VSolid *boxS
+//  	  = new G4Box("Box", m, m, m);
+//
+//  G4LogicalVolume *boxLV
+//  	  = new G4LogicalVolume(boxS, lead, "Box");
+//
+//  new G4PVPlacement(
+//		  0,
+//		  G4ThreeVector(0,0,0),
+//		  boxLV,
+//		  "box",
+//		  worldLV,
+//		  false,
+//		  0,
+//		  fCheckOverlaps);
+
   worldLV->SetVisAttributes (G4VisAttributes::Invisible);
 
   G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
