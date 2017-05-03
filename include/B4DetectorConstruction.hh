@@ -73,8 +73,8 @@ class B4DetectorConstruction : public G4VUserDetectorConstruction
     //
     void DefineMaterials();
     G4VPhysicalVolume* DefineVolumes();
-	G4VPhysicalVolume * makeTriangle(G4LogicalVolume *worldLV, G4ThreeVector pos, G4RotationMatrix *rot,
-			G4String name);
+	G4VPhysicalVolume* makeTriangle(G4LogicalVolume *worldLV, G4ThreeVector pos,
+			G4RotationMatrix *rot, G4String name, G4double sideLength, G4double depth);
   
     // data members
     //
@@ -87,19 +87,6 @@ class B4DetectorConstruction : public G4VUserDetectorConstruction
     
     G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps
 };
-
-// inline functions
-
-//inline const G4VPhysicalVolume* B4DetectorConstruction::GetAbsorberPV() const {
-//  return fAbsorberPV;
-//}
-
-//inline const G4VPhysicalVolume* B4DetectorConstruction::GetGapPV() const  {
-//  return fGapPV;
-//}
-     
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
 

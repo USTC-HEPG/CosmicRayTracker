@@ -24,10 +24,10 @@
 
 #include "G4Polyhedra.hh"
 #include "G4NistManager.hh"
-#include "G4Trap.hh"
+#include "G4Trd.hh"
 
-G4ThreadLocal 
-G4GlobalMagFieldMessenger* B4DetectorConstruction::fMagFieldMessenger = 0; 
+G4ThreadLocal
+G4GlobalMagFieldMessenger* B4DetectorConstruction::fMagFieldMessenger = 0;
 
 B4DetectorConstruction::B4DetectorConstruction()
  : G4VUserDetectorConstruction(),
@@ -36,25 +36,25 @@ B4DetectorConstruction::B4DetectorConstruction()
    fCheckOverlaps(true),
    triangleRotation()
 {
-	triangleRotation.rotateY(90 * deg);
-	triangleRotation.rotateZ(30 * deg);
+//	triangleRotation.rotateY(90 * deg);
+//	triangleRotation.rotateZ(30 * deg);
 }
 
 B4DetectorConstruction::~B4DetectorConstruction()
-{ 
+{
 }
 
 G4VPhysicalVolume* B4DetectorConstruction::Construct()
 {
-  // Define materials 
+  // Define materials
   DefineMaterials();
-  
+
   // Define volumes
   return DefineVolumes();
 }
 
 void B4DetectorConstruction::DefineMaterials()
-{ 
+{
 
   G4NistManager* nistManager = G4NistManager::Instance();
 /*
@@ -66,11 +66,11 @@ void B4DetectorConstruction::DefineMaterials()
 
   // Lead material defined using NIST Manager
   nistManager->FindOrBuildMaterial("G4_Pb");
-  
+
   // Liquid argon material
   G4double a;  // mass of a mole;
-  G4double z;  // z=mean number of protons;  
-  G4double density; 
+  G4double z;  // z=mean number of protons;
+  G4double density;
   new G4Material("liquidArgon", z=18., a= 39.95*g/mole, density= 1.390*g/cm3);
          // The argon by NIST Manager is a gas with a different density
 
@@ -95,63 +95,28 @@ void B4DetectorConstruction::DefineMaterials()
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 }
 
-
-G4VPhysicalVolume * makeTrianglePoly(G4LogicalVolume *worldLV, G4ThreeVector pos,
-		G4RotationMatrix *rot, G4String name){
-  G4NistManager *nist = G4NistManager::Instance();
-  G4Material* polystyrene = nist->FindOrBuildMaterial("G4_POLYSTYRENE");
-//  G4Material* polystyrene = nist->FindOrBuildMaterial("G4_Pb");
-  //Time to add a triangular prism
-//  G4double size = 5 * cm;
-//  G4double height = 10 * cm;
-  G4double size = m;
-  G4double height = m;
-  const G4double outerRadii[] = {0, size, size, 0};
-  const G4double zCoords[] = {0, 0, height, height};
-  G4VSolid* triangly
-  	= new G4Polyhedra(name,//name
-  			G4double(0), G4double(2 * CLHEP::pi), //draw from angles 0 to 2pi
-  			G4int(3), G4int(4), //triangles have 3 sides, and triangular prisms have 4 changes in radius
-			outerRadii, zCoords);//the center of the triangle is 0 from the center, while the corners are size from the center
-  G4LogicalVolume* trianglyLV = new G4LogicalVolume(triangly, polystyrene, "Triangly");
-  G4PVPlacement* trianglyPV = new G4PVPlacement(
-	rot, //yes rotation
-	pos,
-	trianglyLV,
-	"Triangly",
-	worldLV, //place it in the world
-	false, // no boolean operation (whatever that means)
-	0, //copy number apparently
-	true);//better check for those overlaps
-
-  //tell the compile I don't care this variable wasn't used.
-  //Note that really all these things should be deleted at some point.
-  return  trianglyPV;
-}
-
 G4VPhysicalVolume* B4DetectorConstruction::makeTriangle(G4LogicalVolume *worldLV, G4ThreeVector pos,
-		G4RotationMatrix *rot, G4String name){
+		G4RotationMatrix *rot, G4String name, G4double sideLength, G4double depth){
+	G4RotationMatrix *finalRot = new G4RotationMatrix(*rot);//NOTE: this allocates memory that is never freed.
+	finalRot->rotateX(pi/2);
+	finalRot->rotateZ(pi/2);
+	float heightWidthRatio =  .86602540;//This is the ratio of height to width in an equilateral triangle.
 	G4NistManager *nist = G4NistManager::Instance();
 	G4Material* polystyrene = nist->FindOrBuildMaterial("G4_Pb");
 //    G4Material* polystyrene = nist->FindOrBuildMaterial("G4_POLYSTYRENE");
-	G4double l1 = 10*cm, l2 = 10*cm;
-	G4double lz = 20*cm;
-	G4double angle = 2*pi / 6;
-//	G4VSolid* triangly
-//		= new G4Trap("traingle",
-//				/*pDz*/lz, /*pTheta*/0,
-//				/*pPhi*/0, /*pDy1*/l2,
-//				/*pDx1*/0, /*pDx2*/l1,
-//				/*pAlp1*/angle, /*pDy2*/l2,
-//				/*pDx3*/0, /*pDx4*/l1,
-//				/*pAlp2*/angle);
-	G4VSolid *triangly
-		= new G4Trap(name,
-				lz, l2, l1, 1);
+	//NOTE: y direction is depth, x direction is width.
+	//TO put that another way, a plane perpendicular to y axis cuts a triangle cross section
+	//The pointy edge points in the positive z direction
+	G4VSolid *triangly = new G4Trd(name,
+            /*dx1*/sideLength / 2,
+            /*dx2*/0,
+            /*dy1*/depth / 2,
+            /*dy2*/depth / 2,
+            /*dz*/sideLength * heightWidthRatio / 2);
 
     G4LogicalVolume* trianglyLV = new G4LogicalVolume(triangly, polystyrene, "Triangly");
     G4PVPlacement* trianglyPV = new G4PVPlacement(
-  	rot, //yes rotation
+  	finalRot, //yes rotation
   	pos,
   	trianglyLV,
   	"Triangly",
@@ -173,51 +138,33 @@ G4VPhysicalVolume* B4DetectorConstruction::DefineVolumes()
   G4double worldSizeZ  = 50 * cm;
 //  G4double worldSizeXY = 10 * m;
 //  G4double worldSizeZ  = 10 * m;
-  
+
   G4Material* defaultMaterial = G4Material::GetMaterial("Galactic");
 
-  G4VSolid* worldS 
+  G4VSolid* worldS
     = new G4Box("World",           // its name
                  worldSizeXY/2, worldSizeXY/2, worldSizeZ/2); // its size
-                         
+
   G4LogicalVolume* worldLV
     = new G4LogicalVolume(
                  worldS,           // its solid
                  defaultMaterial,  // its material
                  "World");         // its name
-                                   
+
   G4VPhysicalVolume* worldPV
     = new G4PVPlacement(
                  0,                // no rotation
                  G4ThreeVector(),  // at (0,0,0)
-                 worldLV,          // its logical volume                         
+                 worldLV,          // its logical volume
                  "World",          // its name
                  0,                // its mother  volume
                  false,            // no boolean operation
                  0,                // copy number
-                 fCheckOverlaps);  // checking overlaps 
-  
-  makeTriangle(worldLV,G4ThreeVector(0,0, -20 * cm),&triangleRotation, "triangle 1");
-  makeTriangle(worldLV,G4ThreeVector(0,0,0),&triangleRotation, "triangle 2");
-  makeTriangle(worldLV,G4ThreeVector(0,0, 20 * cm),&triangleRotation, "triangle 3");
-//  G4NistManager *nist = G4NistManager::Instance();
-//  G4Material* lead = nist->FindOrBuildMaterial("G4_Pb");
-//
-//  G4VSolid *boxS
-//  	  = new G4Box("Box", m, m, m);
-//
-//  G4LogicalVolume *boxLV
-//  	  = new G4LogicalVolume(boxS, lead, "Box");
-//
-//  new G4PVPlacement(
-//		  0,
-//		  G4ThreeVector(0,0,0),
-//		  boxLV,
-//		  "box",
-//		  worldLV,
-//		  false,
-//		  0,
-//		  fCheckOverlaps);
+                 fCheckOverlaps);  // checking overlaps
+
+  makeTriangle(worldLV,G4ThreeVector(0,0, -20 * cm),&triangleRotation, "triangle 1", 10 * cm, 10 * cm);
+  makeTriangle(worldLV,G4ThreeVector(0,0,0),&triangleRotation, "triangle 2", 10 * cm, 10 * cm);
+  makeTriangle(worldLV,G4ThreeVector(0,0, 20 * cm),&triangleRotation, "triangle 3", 10 * cm, 10 * cm);
 
   worldLV->SetVisAttributes (G4VisAttributes::Invisible);
 
@@ -234,14 +181,14 @@ G4VPhysicalVolume* B4DetectorConstruction::DefineVolumes()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void B4DetectorConstruction::ConstructSDandField()
-{ 
+{
   // Create global magnetic field messenger.
   // Uniform magnetic field is then created automatically if
   // the field value is not zero.
   G4ThreeVector fieldValue = G4ThreeVector();
   fMagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
   fMagFieldMessenger->SetVerboseLevel(1);
-  
+
   // Register the field messenger for deleting
   G4AutoDelete::Register(fMagFieldMessenger);
 }
