@@ -3,8 +3,7 @@
 // * License and Disclaimer                                           *
 // *                                                                  *
 // * The  Geant4 software  is  copyright of the Copyright Holders  of *
-// * the Geant4 Collaboration.  It is provided  under  the terms  and *
-// * conditions of the Geant4 Software License,  included in the file *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and * // * conditions of the Geant4 Software License,  included in the file *
 // * LICENSE and available at  http://cern.ch/geant4/license .  These *
 // * include a list of copyright holders.                             *
 // *                                                                  *
@@ -34,6 +33,7 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
 #include "Config.hh"
+#include "G4ThreeVector.hh"
 
 class B4DetectorConstruction;
 class G4ParticleGun;
@@ -57,11 +57,13 @@ public:
   // set methods
   void SetRandomFlag(G4bool value);
   G4double getLastGeneratedEnergy();
+  G4ThreeVector getLastGeneratedPosition();
 
 private:
   Config *mConfig;
   G4ParticleGun*  fParticleGun; // G4 particle gun
   G4double lastGeneratedEnergy;
+  G4ThreeVector lastGeneratedPosition;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

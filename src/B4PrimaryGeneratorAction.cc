@@ -17,7 +17,8 @@ B4PrimaryGeneratorAction::B4PrimaryGeneratorAction(Config* config)
  : G4VUserPrimaryGeneratorAction(),
    mConfig(config),
    fParticleGun(0),
-   lastGeneratedEnergy(-0.1)
+   lastGeneratedEnergy(-0.1),
+   lastGeneratedPosition()
 {
   // we want to generate 1 particles per event
   G4int nofParticles = 1;
@@ -71,18 +72,19 @@ void B4PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // in the geometry routine, we define a box called the "world" and the detector and everything must be inside the box
   // if a particle goes outside the box, it is removed from the particle list and no longer tracked.
   // here we are creating our particle at x,y,z = 0,0, -z edge of the box
-  G4double width = 25.*cm;
-  G4double height = 25.*cm;
+  G4double width = 10.*cm;
+  G4double height = 10.*cm;
 
   G4double xpos = 0.;
   G4double zpos = 0.;
 
-  if(mConfig->distrib){
+  if(mConfig->distribPos){
 	  xpos = (width*G4UniformRand())-(width/2);
 	  zpos = (height*G4UniformRand())-(height/2);
   }
-
-  fParticleGun->SetParticlePosition(G4ThreeVector(xpos, worldYHalfLength-10, zpos));
+  G4ThreeVector pos = G4ThreeVector(xpos, worldYHalfLength-10, zpos);
+  lastGeneratedPosition = pos;
+  fParticleGun->SetParticlePosition(pos);
 
   //default- fires particle straight down
    G4double xMom = 0.;
@@ -90,7 +92,7 @@ void B4PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
    G4double zMom = 0.;
 
    //distrib- fires particles according to cos^2 distribution
-   if(mConfig->distrib){
+   if(mConfig->distribAng){
    G4double theta = pi*G4UniformRand();
    G4double psi = -pi*G4UniformRand();
 
@@ -118,3 +120,6 @@ G4double B4PrimaryGeneratorAction::getLastGeneratedEnergy(){
 }
 
 
+G4ThreeVector B4PrimaryGeneratorAction::getLastGeneratedPosition(){
+	return lastGeneratedPosition;
+}

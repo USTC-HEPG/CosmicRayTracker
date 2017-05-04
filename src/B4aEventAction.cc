@@ -52,20 +52,25 @@ B4aEventAction::B4aEventAction(Config *pConfig,
 
 B4aEventAction::~B4aEventAction()
 {
+}
+
+void B4aEventAction::BeginOfEventAction(const G4Event* /*event*/)
+{
 	/*Initialize all triangles to zero energy deposited*/
 	for (int i = 0; i < detectorConst->scintVolumes.size(); i++){
 		deposited[detectorConst->scintVolumes[i]] = 0.0;
 	}
 }
 
-void B4aEventAction::BeginOfEventAction(const G4Event* /*event*/)
-{  
-}
-
 void B4aEventAction::EndOfEventAction(const G4Event* event)
 {
 	for (int i = 0; i < detectorConst->scintVolumes.size(); i++){
 		G4cout << "Triangle " << i << " energy " << deposited[detectorConst->scintVolumes[i]] << G4endl;
+		G4double energy = deposited[detectorConst->scintVolumes[i]];
+		if (energy > 8){
+			G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
+			analysisManager->FillH1(0, primGens->getLastGeneratedPosition().getX(), 1);
+		}
 	}
 }  
 

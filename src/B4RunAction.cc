@@ -52,6 +52,8 @@ B4RunAction::B4RunAction(Config * pConfig)
 		analysisManager->CreateH2("energy", "Measured vs true energy", 100, 0, config->energy*GeV, 100, 0, config->energy*GeV,
 								"none", "none", "none", "none", "linear", "linear");
 	}
+
+	analysisManager->CreateH1("x-vals", "X values", 100, -7*cm, 7*cm);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -86,6 +88,7 @@ void B4RunAction::BeginOfRunAction(const G4Run* /*run*/)
 		analysisManager->OpenFile(fileName);
 
 	}
+	analysisManager->OpenFile("PositionHist.root");
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -94,6 +97,8 @@ void B4RunAction::EndOfRunAction(const G4Run* /*run*/)
 {
 	// print histogram statistics
 	//
+
+
 	if (config->makePlot){
 		G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 		if ( analysisManager->GetH1(1) ) {
@@ -143,6 +148,10 @@ void B4RunAction::EndOfRunAction(const G4Run* /*run*/)
 		analysisManager->Write();
 		analysisManager->CloseFile();
 	}
+	/*For the horizontal histogram*/
+	G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+	analysisManager->Write();
+	analysisManager->CloseFile();
 
 }
 

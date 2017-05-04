@@ -7,12 +7,14 @@
 
 #include <Config.hh>
 
-Config::Config(G4double pEnergy, bool pRandomize, bool pMakePlot, bool pMakeHist, bool pDistrib):
+Config::Config(G4double pEnergy, bool pRandomize, bool pMakePlot, bool pMakeHist, bool pDistribPos, bool pDistribAng):
 	energy(pEnergy),
 	randomize(pRandomize),
 	makePlot(pMakePlot),
 	makeHist(pMakeHist),
-	distrib(pDistrib){
+	distribPos(pDistribPos),
+	distribAng(pDistribAng)
+{
 }
 
 Config::~Config() {
