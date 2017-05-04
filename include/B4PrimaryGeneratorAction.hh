@@ -35,6 +35,7 @@
 #include "globals.hh"
 #include "Config.hh"
 
+class B4DetectorConstruction;
 class G4ParticleGun;
 class G4Event;
 

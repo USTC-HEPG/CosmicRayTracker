@@ -64,7 +64,7 @@ int main(int argc,char** argv)
 {
   // Evaluate arguments
   //
-  if ( argc > 7 ) {
+  if ( argc > 8 ) {
     G4cout << "Too many args" << G4endl;
     PrintUsage();
     return 1;
@@ -76,6 +76,7 @@ int main(int argc,char** argv)
   bool randomize = false;
   bool doPlot = false;
   bool doHist = false;
+  bool distrib = false;
 #ifdef G4MULTITHREADED
   G4int nThreads = 0;
 #endif
@@ -87,6 +88,7 @@ int main(int argc,char** argv)
     else if ( arg == "-r") {randomize = true; i -= 1;}
     else if ( arg == "-p") {doPlot = true; i -= 1;}
     else if ( arg == "-h") {doHist = true; i -= 1;}
+    else if ( arg == "-d") {distrib = true; i -= 1;}
 #ifdef G4MULTITHREADED
     else if ( G4String(argv[i]) == "-t" ) {
       nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
@@ -121,7 +123,7 @@ int main(int argc,char** argv)
   G4RunManager * runManager = new G4RunManager;
 #endif
 
-  Config* config = new Config(energy, randomize, doPlot, doHist);
+  Config* config = new Config(energy, randomize, doPlot, doHist, distrib);
 
   // Set mandatory initialization classes
   //
