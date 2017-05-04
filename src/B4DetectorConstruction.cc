@@ -29,15 +29,11 @@
 G4ThreadLocal
 G4GlobalMagFieldMessenger* B4DetectorConstruction::fMagFieldMessenger = 0;
 
-B4DetectorConstruction::B4DetectorConstruction()
+B4DetectorConstruction::B4DetectorConstruction(std::vector<Scintillator> scints)
  : G4VUserDetectorConstruction(),
-   fAbsorberPV(0),
-   fGapPV(0),
-   fCheckOverlaps(true),
-   triangleRotation()
+   mScints(scints),
+   fCheckOverlaps(true)
 {
-//	triangleRotation.rotateY(90 * deg);
-//	triangleRotation.rotateZ(30 * deg);
 }
 
 B4DetectorConstruction::~B4DetectorConstruction()
@@ -57,15 +53,6 @@ void B4DetectorConstruction::DefineMaterials()
 {
 
   G4NistManager* nistManager = G4NistManager::Instance();
-/*
-  //scintillator material
-  G4Material* fPolystyrene= nistManager->FindOrBuildMaterial("G4_POLYSTYRENE");
-  //air
-  G4Material* fAir = nistManager->FindOrBuildMaterial("G4_AIR");
-*/
-
-  // Lead material defined using NIST Manager
-  nistManager->FindOrBuildMaterial("G4_Pb");
 
   // Liquid argon material
   G4double a;  // mass of a mole;
@@ -74,17 +61,6 @@ void B4DetectorConstruction::DefineMaterials()
   new G4Material("liquidArgon", z=18., a= 39.95*g/mole, density= 1.390*g/cm3);
          // The argon by NIST Manager is a gas with a different density
 
-
-  //Polystyrene stuff form this website: http://accms04.physik.rwth-aachen.de/~hgast/cplusplus/vortrag_day5.pdf
-  //Elements required for polystyrene
-  new G4Element("Hydrogen", "H", 1,
-		  1.008 * CLHEP::g / CLHEP::mole);
-  new G4Element("Carbon", "C", 6,
-		  12.011 * CLHEP::g / CLHEP::mole);
-  //POLYSTYRENE
-  G4Material* polystyrene = new G4Material("Polystyrene", 1.0320 * CLHEP::g / CLHEP::cm3, 2, kStateSolid);
-  polystyrene->AddElement(G4Element::GetElement("Hydrogen", true), 8);//8 is atoms per unit
-  polystyrene->AddElement(G4Element::GetElement("Carbon", true), 8);
 
   // Vacuum
   new G4Material("Galactic", z=1., a=1.01*g/mole,density= universe_mean_density,
@@ -97,13 +73,18 @@ void B4DetectorConstruction::DefineMaterials()
 
 G4VPhysicalVolume* B4DetectorConstruction::makeTriangle(G4LogicalVolume *worldLV, G4ThreeVector pos,
 		G4RotationMatrix *rot, G4String name, G4double sideLength, G4double depth){
-	G4RotationMatrix *finalRot = new G4RotationMatrix(*rot);//NOTE: this allocates memory that is never freed.
+	G4RotationMatrix *finalRot;
+	if (rot){
+		finalRot = new G4RotationMatrix(*rot);//NOTE: this allocates memory that is never freed.
+	} else {
+		finalRot = new G4RotationMatrix();
+	}
 	finalRot->rotateX(pi/2);
 	finalRot->rotateZ(pi/2);
 	float heightWidthRatio =  .86602540;//This is the ratio of height to width in an equilateral triangle.
 	G4NistManager *nist = G4NistManager::Instance();
-	G4Material* polystyrene = nist->FindOrBuildMaterial("G4_Pb");
-//    G4Material* polystyrene = nist->FindOrBuildMaterial("G4_POLYSTYRENE");
+//	G4Material* polystyrene = nist->FindOrBuildMaterial("G4_Pb");
+    G4Material* polystyrene = nist->FindOrBuildMaterial("G4_POLYSTYRENE");
 	//NOTE: y direction is depth, x direction is width.
 	//TO put that another way, a plane perpendicular to y axis cuts a triangle cross section
 	//The pointy edge points in the positive z direction
@@ -162,9 +143,12 @@ G4VPhysicalVolume* B4DetectorConstruction::DefineVolumes()
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps
 
-  makeTriangle(worldLV,G4ThreeVector(0,0, -20 * cm),&triangleRotation, "triangle 1", 10 * cm, 10 * cm);
-  makeTriangle(worldLV,G4ThreeVector(0,0,0),&triangleRotation, "triangle 2", 10 * cm, 10 * cm);
-  makeTriangle(worldLV,G4ThreeVector(0,0, 20 * cm),&triangleRotation, "triangle 3", 10 * cm, 10 * cm);
+  /*Make triangle geometry out of Scintillator description*/
+
+  for (size_t i = 0; i < mScints.size(); i++){
+	  scintVolumes.push_back(makeTriangle(worldLV, mScints[i].getPosition(), NULL, "temp-name",
+			  10 * cm, 20*cm));
+  }
 
   worldLV->SetVisAttributes (G4VisAttributes::Invisible);
 

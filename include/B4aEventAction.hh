@@ -33,9 +33,11 @@
 
 #include "G4UserEventAction.hh"
 #include "B4PrimaryGeneratorAction.hh"
+#include "B4DetectorConstruction.hh"
 #include "Config.hh"
 #include "globals.hh"
 #include <map>
+#include "G4VPhysicalVolume.hh"
 
 /// Event action class
 ///
@@ -48,19 +50,20 @@
 class B4aEventAction : public G4UserEventAction
 {
   public:
-    B4aEventAction(Config *pConfig, B4PrimaryGeneratorAction *pPrimGens);
+    B4aEventAction(Config *pConfig, B4PrimaryGeneratorAction *pPrimGens, B4DetectorConstruction *pDetectorConst);
     virtual ~B4aEventAction();
 
     virtual void  BeginOfEventAction(const G4Event* event);
     virtual void    EndOfEventAction(const G4Event* event);
     
-    void trigger(G4String name);
+    void depositEnergy(G4VPhysicalVolume* volume, G4double energy);
 
   private:
 
     Config *config;
     B4PrimaryGeneratorAction *primGens;
-    std::map<G4String, bool> triggered;
+    B4DetectorConstruction *detectorConst;
+    std::map<G4VPhysicalVolume*, G4double> deposited;
 
 };
 

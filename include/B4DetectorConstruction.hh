@@ -35,28 +35,18 @@
 #include "globals.hh"
 #include "G4ThreeVector.hh"
 #include "G4RotationMatrix.hh"
+#include "Scintillator.hh"
+#include "G4VPhysicalVolume.hh"
 
 class G4VPhysicalVolume;
 class G4GlobalMagFieldMessenger;
 
-/// Detector construction class to define materials and geometry.
-/// The calorimeter is a box made of a given number of layers. A layer consists
-/// of an absorber plate and of a detection gap. The layer is replicated.
-///
-/// Four parameters define the geometry of the calorimeter :
-///
-/// - the thickness of an absorber plate,
-/// - the thickness of a gap,
-/// - the number of layers,
-/// - the transverse size of the calorimeter (the input face is a square).
-///
-/// In addition a transverse uniform magnetic field is defined 
-/// via G4GlobalMagFieldMessenger class.
+#include <vector>
 
 class B4DetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
-    B4DetectorConstruction();
+    B4DetectorConstruction(std::vector<Scintillator>);
     virtual ~B4DetectorConstruction();
 
   public:
@@ -67,6 +57,8 @@ class B4DetectorConstruction : public G4VUserDetectorConstruction
     //
     const G4VPhysicalVolume* GetAbsorberPV() const;
     const G4VPhysicalVolume* GetGapPV() const;
+
+    std::vector<G4VPhysicalVolume*> scintVolumes;
      
   private:
     // methods
@@ -78,12 +70,11 @@ class B4DetectorConstruction : public G4VUserDetectorConstruction
   
     // data members
     //
-	G4RotationMatrix triangleRotation;
+	std::vector<Scintillator> mScints;
+
     static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger; 
                                       // magnetic field messenger
      
-    G4VPhysicalVolume*   fAbsorberPV; // the absorber physical volume
-    G4VPhysicalVolume*   fGapPV;      // the gap (active material) physical volume
     
     G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps
 };

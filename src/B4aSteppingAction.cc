@@ -31,6 +31,8 @@
 #include "B4aSteppingAction.hh"
 #include "B4aEventAction.hh"
 #include "B4DetectorConstruction.hh"
+#include "G4VPhysicalVolume.hh"
+#include <vector>
 
 #include "G4Step.hh"
 #include "G4RunManager.hh"
@@ -59,7 +61,7 @@ void B4aSteppingAction::UserSteppingAction(const G4Step* step)
 // Collect energy and track length step by step
 
   // get volume of the current step
-  G4VPhysicalVolume* volume 
+  G4VPhysicalVolume* volume
     = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
   
   // energy deposit
@@ -70,14 +72,6 @@ void B4aSteppingAction::UserSteppingAction(const G4Step* step)
   if ( step->GetTrack()->GetDefinition()->GetPDGCharge() != 0. ) {
     stepLength = step->GetStepLength();
   }
-      
-//  if ( volume == fDetConstruction->GetAbsorberPV() ) {
-//    fEventAction->AddAbs(edep,stepLength);
-//  }
-  
-//  if ( volume == fDetConstruction->GetGapPV() ) {
-//    fEventAction->AddGap(edep,stepLength);
-//  }
-}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  fEventAction->depositEnergy(volume, edep);
+}

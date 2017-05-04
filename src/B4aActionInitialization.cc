@@ -63,7 +63,7 @@ void B4aActionInitialization::Build() const
   B4PrimaryGeneratorAction *primGen = new B4PrimaryGeneratorAction(mConfig);
   SetUserAction(primGen);
   SetUserAction(new B4RunAction(mConfig));
-  B4aEventAction* eventAction = new B4aEventAction(mConfig, primGen);
+  B4aEventAction* eventAction = new B4aEventAction(mConfig, primGen, fDetConstruction);
   SetUserAction(eventAction);
   SetUserAction(new B4aSteppingAction(fDetConstruction,eventAction));
 }  

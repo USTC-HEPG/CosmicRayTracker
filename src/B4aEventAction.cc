@@ -41,15 +41,22 @@
 #include <map>
 
 B4aEventAction::B4aEventAction(Config *pConfig,
-		B4PrimaryGeneratorAction *pPrimGens)
+		B4PrimaryGeneratorAction *pPrimGens, B4DetectorConstruction *pDetectorConst)
 : G4UserEventAction(),
   config(pConfig),
   primGens(pPrimGens),
-  triggered()
-{}
+  detectorConst(pDetectorConst),
+  deposited()
+{
+}
 
 B4aEventAction::~B4aEventAction()
-{}
+{
+	/*Initialize all triangles to zero energy deposited*/
+	for (int i = 0; i < detectorConst->scintVolumes.size(); i++){
+		deposited[detectorConst->scintVolumes[i]] = 0.0;
+	}
+}
 
 void B4aEventAction::BeginOfEventAction(const G4Event* /*event*/)
 {  
@@ -57,14 +64,12 @@ void B4aEventAction::BeginOfEventAction(const G4Event* /*event*/)
 
 void B4aEventAction::EndOfEventAction(const G4Event* event)
 {
-	for (std::map<G4String, bool>::iterator it = triggered.begin();
-			it != triggered.end(); ++it){
-		if (it->second){
-			G4cout << "Triangle " << it->first << " triggered" << G4endl;
-		}
+	for (int i = 0; i < detectorConst->scintVolumes.size(); i++){
+		G4cout << "Triangle " << i << " energy " << deposited[detectorConst->scintVolumes[i]] << G4endl;
 	}
 }  
 
-void B4aEventAction::trigger(G4String name){
-	triggered[name] = true;
+
+void B4aEventAction::depositEnergy(G4VPhysicalVolume* volume, G4double energy){
+	deposited[volume] += energy;
 }

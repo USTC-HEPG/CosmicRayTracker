@@ -4,9 +4,7 @@
 // *                                                                  *
 // * The  Geant4 software  is  copyright of the Copyright Holders  of *
 // * the Geant4 Collaboration.  It is provided  under  the terms  and *
-// * conditions of the Geant4 Software License,  included in the file *
-// * LICENSE and available at  http://cern.ch/geant4/license .  These *
-// * include a list of copyright holders.                             *
+// * conditions of the Geant4 Software License,  included in the file * // * LICENSE and available at  http://cern.ch/geant4/license .  These * // * include a list of copyright holders.                             *
 // *                                                                  *
 // * Neither the authors of this software system, nor their employing *
 // * institutes,nor the agencies providing financial support for this *
@@ -30,6 +28,7 @@
 
 #include "B4DetectorConstruction.hh"
 #include "B4aActionInitialization.hh"
+#include "Layout.hh"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -127,7 +126,7 @@ int main(int argc,char** argv)
 
   // Set mandatory initialization classes
   //
-  B4DetectorConstruction* detConstruction = new B4DetectorConstruction();
+  B4DetectorConstruction* detConstruction = new B4DetectorConstruction(makeLayout());
   runManager->SetUserInitialization(detConstruction);
 
   G4VModularPhysicsList* physicsList = new FTFP_BERT;
